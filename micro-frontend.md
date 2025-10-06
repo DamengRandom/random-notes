@@ -1,10 +1,10 @@
-# Micro Frontends
+# Micro Frontend
 
-This note just a general overview of micro frontends.
+This note just a general overview of micro frontend.
 
-## What are micro frontends?
+## What is micro frontend?
 
-Micro frontends are a way to break down a large application into smaller, more manageable pieces.
+Micro frontend is a way to break down a large application into smaller, more manageable pieces.
 
 ## Why use micro frontends?
 
@@ -23,4 +23,3 @@ Micro frontends are a way to break down a large application into smaller, more m
 - use a framework like [single-spa](https://single-spa.js.org/)
 - use a framework like [qiankun](https://qiankun.umijs.org/)
 - use a framework like [module federation](https://webpack.js.org/concepts/module-federation/)
-- use a framework like [single-spa](https://single-spa.js.org/)
