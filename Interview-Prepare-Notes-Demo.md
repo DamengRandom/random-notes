@@ -74,9 +74,17 @@ For `Project 2`: we have decided to add `batch data fetching` for MQTT subscribe
 
 For both projects, when I received feedback, I re‑evaluated the solution and found the best trade‑offs to implement. Sometimes, for example, we needed to deliver quickly within a short timeframe, so we balanced features, performance, and user experience.
 
+
+In a summary:
+
+- I excel at deconstructing complex projects into manageable phases, such as analysis, design, and estimation.
+- I am skilled at researching and identifying appropriate technologies to address specific challenges like performance and fault tolerance.
+- By presenting data, I facilitate a shift to phased deliverables, which allows us to push back on unattainable dates with a constructive alternative.
+- I actively solicit and incorporate feedback from team members, and I am flexible in adapting priorities based on our collective discussions.
+
 In a word, Analyze each problem on a case-by-case basis. 
 
-My perosnal thought:
 
+My perosnal thought:
 
 The descring steps could be: `What project it is` -> `How to work together with related people` -> `what kind of chanlledges faced, how did overcome those` -> `how to influence the direction and push back some feedbacks` -> `how to adapt the feedbacks and shifiting the priorities`
