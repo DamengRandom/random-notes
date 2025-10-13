@@ -1,4 +1,4 @@
-# Interview Prepare Notes - (What project have you been worked with?)
+# Interview Prepare Notes - (What project have you been worked with?) [Purely self-prepare thoughts]
 
 ## About the point/requirement `1️⃣ Projects you’ve led or contributed to that involved meaningful technical decisions`:
 
@@ -85,6 +85,54 @@ In a summary:
 In a word, Analyze each problem on a case-by-case basis. 
 
 
-My perosnal thought:
+## My perosnal thought:
 
 The descring steps could be: `What project it is` -> `How to work together with related people` -> `what kind of chanlledges faced, how did overcome those` -> `how to influence the direction and push back some feedbacks` -> `how to adapt the feedbacks and shifiting the priorities`
+
+
+## Shorter version
+
+Project 1: its a stale data clean up task by helping business to save some costs for cloud storage (✅)
+
+Techs: Keubernetes Cronjob configurations, ElasticSearch, NodeJS API - No mention
+
+Steps how we work together: (✅)
+- Find out the team leads (devops + my) to figure out the business requirements over the meeting
+- Draw diagrams and understand work flow clearly
+- Come up with tech solutions based on some system design princples 
+- Run through the proposal with team and grab feedbacks
+- After approved, then, start to call AL for help with JIRA tickets creation and also prioritize the specific tasks
+
+Challenges: (✅)
+- Handle large amount of data deletion requests smoothly without timeouts
+- Avoid Out Of Memory (`OOM`) error on Kubernetes pods
+
+Influence direction: introduced the `time-period-batch-deletion` concept -> making smaller range of deletion and also created batches for better API request handling
+
+Team member suggestion: add some observability logs for tracking the deletion behaviour more accurately
+
+Project 2: it's a bet interception funcitonality, which help traders to accept/reject/counter-offer bets easily, so prevously, blah, blah ..
+
+Techs: MQTT, NodeJS Service + API, ReactJS, ElasticSearch  - No mention
+
+Steps how we work together:
+- Find out the PO, UI designer, team lead to figure out the business requirements over the meeting (✅)
+- Draw diagrams and understand work flow clearly
+- Once designer comes up with a UI design, we also discuss together UI technical discussions whether the UI part is able to be achieved or not (✅), what components needs to be used for from ant design framework
+- Meanwhile, design the tech solutions based on understandings
+- Run through the proposal with team and grab feedbacks & polish
+- After approved, then, start to call AL for help with JIRA tickets creations and also prioritize the specific tasks
+
+Challenges: (✅)
+- Handle the UI bugs when loading too many intercepted bet messages at once
+
+Pushed back: we have implemented stages releases -> stage 1: basic version API initial loading -> stage 2: real time intercepted cards displayed -> stage 3 after tested few rounds, we do production release (✅)
+
+Stakeholders clearly know the roadmap for this functionality development
+
+Summary:
+
+- Like to separate the big task into smaller ones, and analyse the entire workflow and then provide the technical solution for it
+- Also, proactively to do some researching and identifying appropriate technologies to address specific challenges like performance and fault tolerance
+
+Last word: analyze each problem on a case-by-case basis. 
