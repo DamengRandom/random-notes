@@ -102,3 +102,166 @@ main()
 - define a api from router (backend service side)
 - frontend get call by query/mutation
 - procedure is a request (eg: a query, mutation)
+
+## Middleware
+
+### Example: using auth middleware to secure the tRPC routes / procedures
+
+```ts
+import { initTRPC } from '@trpc/server';
+import superjson from 'superjson';
+import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
+import { verifyAuth } from '@/lib/auth';
+
+export const createTRPCContext = async (opts: CreateNextContextOptions): Promise<Context> => {
+  const { req, res } = opts;
+  let user: UserPayload | null = null;
+
+  try {
+    // Extract token from various sources
+    const token = extractTokenFromRequest(req);
+    
+    if (token) {
+      user = await verifyAccessToken(token);
+    }
+  } catch (error) {
+    // Token verification failed, user stays null
+    console.debug('Auth failed:', error);
+  }
+
+  return {
+    req,
+    res,
+    user,
+  };
+};
+
+
+const t = initTRPC.context<Awaited<ReturnType<typeof createTRPCContext>>>().create({
+  transformer: superjson,
+  errorFormatter({ shape, error }) {
+    // Log unauthorized errors differently
+    if (error.code === 'UNAUTHORIZED') {
+      console.warn('Unauthorized access attempt');
+    }
+    
+    return {
+      ...shape,
+      data: {
+        ...shape.data,
+        // Add custom error data if needed
+      }
+    };
+  }
+});
+
+// create middleware now for checking user, if user exists, means jwt authorization process passed ✅ ~
+const isAuthed = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.user) {
+    throw new TRPCError({ 
+      code: 'UNAUTHORIZED', 
+      message: 'You must be logged in to access this resource' 
+    });
+  }
+
+  return next({
+    ctx: {
+      ...ctx,
+      // Type-safe: JWT authorization passed, can return user info
+      user: ctx.user,
+    },
+  });
+});
+
+export const createTRPCRouter = t.router;
+export const privateProcedure = t.procedure.use(isAuthed); // private procedure with routes
+export const publicProcedure = t.procedure;
+```
+
+
+```ts
+// Just love this part of code, which seems like a good practice here ~
+import { SignJWT, jwtVerify } from 'jose';
+import { nanoid } from 'nanoid';
+
+export interface UserPayload {
+  userId: string;
+  email: string;
+  role: string;
+}
+
+export interface TokenPayload extends jwt.JWTPayload {
+  sub: string;
+  email: string;
+  role: string;
+  type: 'access' | 'refresh';
+  jti: string;
+}
+
+function extractTokenFromRequest(req: NextApiRequest): string | null {
+  // Choice 1. Check Authorization header
+  const authHeader = req.headers.authorization;
+
+  if (authHeader?.startsWith('Bearer ')) {
+    return authHeader.substring(7);
+  }
+
+  // Choice 2. Check query parameter (less secure, for dev/testing)
+  if (req.query.token && typeof req.query.token === 'string') {
+    return req.query.token;
+  }
+
+  return null;
+}
+
+export async function createAccessToken(payload: Omit<UserPayload, 'role'> & { role?: string }): Promise<string> {
+  const secret = getJwtSecret();
+  
+  return await new SignJWT({
+    sub: payload.userId,
+    email: payload.email,
+    role: payload.role || 'user',
+    type: 'access',
+  })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setJti(nanoid())
+    .setIssuedAt()
+    .setExpirationTime('15m')
+    .sign(secret);
+}
+
+export async function verifyAccessToken(token: string): Promise<UserPayload | null> {
+  try {
+    const secret = getJwtSecret();
+    const { payload } = await jwtVerify<TokenPayload>(token, secret);
+    
+    // Validate required claims
+    if (!payload.sub || !payload.email || payload.type !== 'access') {
+      return null;
+    }
+    
+    // Check expiration (jwtVerify does this, but we double-check)
+    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
+      return null;
+    }
+    
+    return {
+      userId: payload.sub,
+      email: payload.email,
+      role: payload.role || 'user',
+    };
+  } catch (error) {
+    // Invalid signature, malformed token, etc.
+    return null;
+  }
+}
+
+// Helper to get JWT secret
+export function getJwtSecret(): Uint8Array {
+  const secret = process.env.JWT_SECRET_KEY;
+  if (!secret || secret.length < 32) {
+    throw new Error('JWT_SECRET_KEY must be at least 32 characters');
+  }
+  return new TextEncoder().encode(secret);
+}
+```
